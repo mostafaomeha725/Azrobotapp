@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "58207109320",
+    "project_id": "azrobot-322a0",
+    "storage_bucket": "azrobot-322a0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58207109320:android:1fe3d9e4f83d6c5b33e5fd",
+        "android_client_info": {
+          "package_name": "com.example.azrobot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58207109320-sa1185gjqfp46i36fb3mv9ma4e59lf6u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmL2xg2BOmq6DSxNpWfgWXv0RUH0wAV68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58207109320-sa1185gjqfp46i36fb3mv9ma4e59lf6u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
