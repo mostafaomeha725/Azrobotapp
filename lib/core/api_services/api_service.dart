@@ -262,6 +262,23 @@ Future<Either<Failure, Map<String, dynamic>>> purchaseVoucher(int voucherId) asy
   );
 }
 
+Future<Either<Failure, Map<String, dynamic>>> addGamePoint(int gameId) async {
+  final response = await Api().post(
+    name: 'games/add-points',
+    withAuth: true,
+    body: {'game_id': gameId},
+    errMessage: 'Failed to add points',
+  );
+
+  return response.fold(
+    (failure) => Left(failure),
+    (data) {
+      final responseData = data ;
+      return Right(responseData);
+    },
+  );
+}
+
 Future<Either<Failure, Map<String, dynamic>>> viewSpecificContent(int contentId) async {
   final response = await Api().post(
     name: 'content/view?content_id=$contentId',
@@ -277,6 +294,37 @@ Future<Either<Failure, Map<String, dynamic>>> viewSpecificContent(int contentId)
     },
   );
 }
+
+
+Future<Either<Failure, List<dynamic>>> getGames() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        return Left(ServerFailure('Token غير موجود'));
+      }
+
+      final response = await dio.get(
+        'https://tempweb90.com/azrobot/public/api/games',
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data is List) {
+        return Right(response.data);
+      } else {
+        return Left(ServerFailure('خطأ في تحميل البيانات'));
+      }
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ أثناء الاتصال بالخادم'));
+    }
+  }
+  
 
 
 }

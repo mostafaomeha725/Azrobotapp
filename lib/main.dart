@@ -12,6 +12,7 @@ import 'package:azrobot/features/auth/presentation/manager/cubits/reset_otp_cubi
 import 'package:azrobot/features/auth/presentation/manager/cubits/sign_in_cubit/sign_in_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/sign_up_cubit/sign_up_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/verify_otp_cubit/verify_otp_cubit.dart';
+import 'package:azrobot/features/games/manager/cubit/get_games_cubit/get_games_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_content/cubit/get_all_contents_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_vouchers/cubit/get_voucher_cubits_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_content_category/getcontentcategory_cubit.dart';
@@ -19,6 +20,7 @@ import 'package:azrobot/features/home/presentation/manager/cubits/post_view_spec
 import 'package:azrobot/features/home/presentation/manager/cubits/purchase_vouchers/cubit/purchase_vouchers_cubit.dart';
 
 import 'package:device_preview/device_preview.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -88,6 +90,12 @@ void main() async {
               ReminderCubit()
                
         ),
+ BlocProvider<GetGamesCubit>(
+          create: (context) =>
+              GetGamesCubit(dio: Dio())
+               
+        ),
+
            BlocProvider<SignInCubit>(
           create: (context) =>
               SignInCubit(
@@ -120,3 +128,4 @@ class AzrobotApp extends StatelessWidget {
     );
   }
 }
+
