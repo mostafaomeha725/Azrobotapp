@@ -29,12 +29,12 @@ class _RepeatWidgetRemindersState extends State<RepeatWidgetReminders> {
                   style: TextButton.styleFrom(
                     backgroundColor:
                         selected == option
-                            ? Color(0xFF41D5C5) // Selected color
+                            ? Color(0xFF41D5C5) 
                             : Colors.transparent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
-                        color: Color(0xFF41D5C5), // Selected border color
+                        color: Color(0xFF41D5C5),
 
                         width: 1,
                       ),

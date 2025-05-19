@@ -27,11 +27,14 @@ class ReminderCardWidget extends StatelessWidget {
   });
 
   void _showUpdateReminderDialog(BuildContext context) {
+    // ignore: no_leading_underscores_for_local_identifiers
     final _titleController = TextEditingController(text: title);
+    // ignore: no_leading_underscores_for_local_identifiers
     final _dateController = TextEditingController(text: dateTime);
+    // ignore: no_leading_underscores_for_local_identifiers
     String _selectedRepeat = repeat;
 
-    // Function to select date and time
+    // ignore: no_leading_underscores_for_local_identifiers
     Future<void> _selectDateTime(BuildContext context) async {
       DateTime? selectedDate = await showDatePicker(
         context: context,
@@ -42,6 +45,7 @@ class ReminderCardWidget extends StatelessWidget {
 
       if (selectedDate != null) {
         TimeOfDay? selectedTime = await showTimePicker(
+          // ignore: use_build_context_synchronously
           context: context,
           initialTime: TimeOfDay.now(),
         );
@@ -148,21 +152,19 @@ class ReminderCardWidget extends StatelessWidget {
                         final userId = prefs.getString("userId");
 
                         if (userId != null) {
-                          // Create updated reminder with all new values
                           final updatedReminder = ReminderModel(
-                            dateTime: date, // Use the new date from controller
-                            reminderText: message, // Use the new message from controller
-                            repeat: repeatValue, // Use the new repeat value
+                            dateTime: date, 
+                            reminderText: message,
+                            repeat: repeatValue, 
                           );
 
-                          // Perform the update
+                          // ignore: use_build_context_synchronously
                           context.read<ReminderCubit>().updateReminder(
                             userId: userId,
                             updatedReminder: updatedReminder,
                             index: index,
                           );
 
-                          // Close the dialog
                           GoRouter.of(context).pop();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -187,9 +189,7 @@ class ReminderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _showUpdateReminderDialog(context),
-      child: Container(
+    return  Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFF41D5C5),
@@ -205,10 +205,14 @@ class ReminderCardWidget extends StatelessWidget {
                 Text("$repeat - $dateTime", style: const TextStyle(color: Colors.white70)),
               ],
             ),
-            ishome ? const Icon(Icons.edit, color: Colors.white) : SizedBox(),
+            ishome ? GestureDetector(
+              onTap: (){
+                _showUpdateReminderDialog(context);
+              },
+              child: const Icon(Icons.edit, color: Colors.white)) : SizedBox(),
           ],
         ),
-      ),
+      
     );
   }
 }

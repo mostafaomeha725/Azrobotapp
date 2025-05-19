@@ -17,7 +17,6 @@ class _MedicalHubViewBodyState extends State<MedicalHubViewBody> {
   @override
   void initState() {
     super.initState();
-    // استدعاء المحتوى حسب الفئة (يمكن تغيير الرقم 2 حسب الفئة المطلوبة)
     context.read<GetContentByCategoryCubit>().getContentByCategory(1);
   }
 
@@ -49,7 +48,7 @@ class _MedicalHubViewBodyState extends State<MedicalHubViewBody> {
                     onTap: () {
                       context.push(
                         AppRouter.kMedicalHubDetailsView,
-                        extra: item, // إرسال بيانات العنصر للصفحة التالية
+                        extra: item, 
                       );
                     },
                     child: CardHome(
@@ -65,7 +64,7 @@ class _MedicalHubViewBodyState extends State<MedicalHubViewBody> {
           );
         }
 
-        return const SizedBox(); // الحالة الابتدائية
+        return const SizedBox(); 
       },
     );
   }

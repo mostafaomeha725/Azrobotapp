@@ -14,6 +14,7 @@ class AzrobotViewBody extends StatefulWidget {
 class _AzrobotViewBodyState extends State<AzrobotViewBody> {
 
   String? point;
+    // ignore: must_call_super, annotate_overrides
     initState() {
      _loadpoint();
     }
@@ -31,13 +32,11 @@ class _AzrobotViewBodyState extends State<AzrobotViewBody> {
  
 
     final size = MediaQuery.of(context).size;
-    final double headerHeight = size.height * 0.35; // 30% of screen height
+    final double headerHeight = size.height * 0.35; 
 
     return SingleChildScrollView(
-      // Make entire page scrollable
       child: Column(
         children: [
-          // Responsive Stack header
           Stack(
             children: [
               Container(
@@ -50,18 +49,16 @@ class _AzrobotViewBodyState extends State<AzrobotViewBody> {
                   ),
                 ),
               ),
-               SafeareHome(isPlaying: true, point: point??"0",),
+               SafeareHome(isPlaying: true,),
             ],
           ),
-          //  const SizedBox(height: 8),
           Text(
             "Offers",
             style: TextStyles.bold18w600,
           ),
           const SizedBox(height: 16),
-          // Active Offer History
           SizedBox(
-            height: size.height * 0.5, // Takes half the screen height
+            height: size.height * 0.5, 
             child: ActiveOfferHistory(),
           ),
         ],

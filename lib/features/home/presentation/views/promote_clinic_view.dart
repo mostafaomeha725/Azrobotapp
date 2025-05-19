@@ -13,17 +13,17 @@ class PromoteClinicView extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            height: 40, // الحجم الذي تريده
-            width: 40, // الحجم الذي تريده
+            height: 40,
+            width: 40,
             decoration: BoxDecoration(
-              color: Color(0xFF0062CC), // اللون الأزرق
-              borderRadius: BorderRadius.circular(10), // تحديد الحواف الدائرية
+              color: Color(0xFF0062CC), 
+              borderRadius: BorderRadius.circular(10), 
             ),
             child: IconButton(
               icon: Icon(
-                Icons.chevron_left_sharp, // أيقونة العودة
-                color: Colors.white, // لون الأيقونة الأبيض
-                size: 24, // حجم الأيقونة
+                Icons.chevron_left_sharp,
+                color: Colors.white,
+                size: 24, 
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -35,7 +35,7 @@ class PromoteClinicView extends StatelessWidget {
           padding: const EdgeInsets.only(right: 50),
           child: Row(
             mainAxisAlignment:
-                MainAxisAlignment.center, // لجعل النص والشعار في الوسط
+                MainAxisAlignment.center, 
             children: [
               Image.asset(Assets.assetsazrobotlogoonly, height: 32),
               SizedBox(width: 8),

@@ -43,8 +43,8 @@ class _BersistentBottomNavBarViewState
           padding: const EdgeInsets.only(top: 10),
           child: SvgPicture.asset(
             _selectedIndex == 0
-                ? Assets.assetsHomecolor // الصورة بعد الضغط
-                : Assets.assetsHome, // الصورة العادية
+                ? Assets.assetsHomecolor 
+                : Assets.assetsHome, 
             // ignore: deprecated_member_use
             color: _selectedIndex == 0 ? Color(0xff134FA2) : Colors.grey,
           ),
@@ -59,8 +59,8 @@ class _BersistentBottomNavBarViewState
           padding: const EdgeInsets.only(top: 10),
           child: SvgPicture.asset(
             _selectedIndex == 1
-                ? Assets.assetsNotificationcolor // الصورة بعد الضغط
-                : Assets.assetsNotification, // الصورة العادية
+                ? Assets.assetsNotificationcolor 
+                : Assets.assetsNotification,
             // ignore: deprecated_member_use
             color: _selectedIndex == 1 ? Color(0xff134FA2) : Colors.grey,
           ),
@@ -76,14 +76,14 @@ class _BersistentBottomNavBarViewState
             shape: BoxShape.circle,
             color: _selectedIndex == 2
                 ? Color(0xff134FA2)
-                : Colors.white, // Color(0xff134FA2),
+                : Colors.white,
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
               Assets.assetsazrobotlogoonly,
               color: _selectedIndex == 2 ? Colors.white : Color(0xff134FA2),
-              // Change color when selected
+          
             ),
           ),
         ),
@@ -105,7 +105,7 @@ class _BersistentBottomNavBarViewState
           padding: const EdgeInsets.only(top: 10),
           child: SvgPicture.asset(
             _selectedIndex == 4 ? Assets.assetsmore : Assets.assetsmorecolor,
-            // Change color if selected
+           
           ),
         ),
         title: "More",

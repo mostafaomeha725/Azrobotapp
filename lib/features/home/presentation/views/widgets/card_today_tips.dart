@@ -12,17 +12,18 @@ class CardTodayTips extends StatelessWidget {
         left: 25,
         right: 30,
         bottom: 16,
-      ), // Margin around the card
-      padding: const EdgeInsets.all(20), // Padding inside the card
+      ),
+      padding: const EdgeInsets.all(20), 
       decoration: BoxDecoration(
-        color: Colors.white, // Background color of the card
-        borderRadius: BorderRadius.circular(15), // Rounded corners
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Shadow color
-            blurRadius: 10, // Shadow blur radius
-            spreadRadius: 5, // How much the shadow spreads
-            offset: const Offset(0, 4), // Shadow position
+            // ignore: deprecated_member_use
+            color: Colors.black.withOpacity(0.1), 
+            blurRadius: 10, 
+            spreadRadius: 5, 
+            offset: const Offset(0, 4), 
           ),
         ],
       ),

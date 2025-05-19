@@ -67,7 +67,6 @@ class OfferHistoryView extends StatelessWidget {
     );
   }
 
-  // دالة مشتركة لمعالجة حدث الرجوع
   void _handleBackButton(BuildContext context) {
     if (context.canPop()) {
       context.pop();

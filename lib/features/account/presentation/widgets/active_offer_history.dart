@@ -2,6 +2,7 @@ import 'package:azrobot/core/utils/app_text_styles.dart';
 import 'package:azrobot/core/widgets/show_success_sheet.dart';
 import 'package:azrobot/features/account/presentation/widgets/custom_widget_buttom.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_vouchers/cubit/get_voucher_cubits_cubit.dart';
+import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/purchase_vouchers/cubit/purchase_vouchers_cubit.dart';
 import 'package:azrobot/features/on_boarding/view/widgets/line_border_painter.dart';
 import 'package:azrobot/features/on_boarding/view/widgets/score_point_widgets.dart';
@@ -50,6 +51,10 @@ class _ActiveOfferHistoryState extends State<ActiveOfferHistory> {
       if (remainingPoints != null) {
         await prefs.setString('point', remainingPoints.toString());
       }
+          final userId = prefs.getString('userId');
+
+            context.read<GetUserPointCubit>().getUserPoints(userId!);
+
                 ShowSuccessSheet.showSuccessDialog(
                   context,
                   "",

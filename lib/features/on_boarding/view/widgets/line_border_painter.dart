@@ -11,7 +11,7 @@ class DashedBorderPainter extends CustomPainter {
           ..color =
               isExpired
                   ? Colors.grey
-                  : Color(0xFF0062CC) // Set color for dashed border
+                  : Color(0xFF0062CC) 
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2;
 
@@ -19,13 +19,13 @@ class DashedBorderPainter extends CustomPainter {
     const dashSpace = 10.0;
     double startX = 0;
 
-    // Top border
+   
     while (startX < size.width) {
       canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
       startX += dashWidth + dashSpace;
     }
 
-    // Bottom border
+   
     startX = 0;
     while (startX < size.width) {
       canvas.drawLine(
@@ -36,14 +36,14 @@ class DashedBorderPainter extends CustomPainter {
       startX += dashWidth + dashSpace;
     }
 
-    // Left border
+   
     double startY = 0;
     while (startY < size.height) {
       canvas.drawLine(Offset(0, startY), Offset(0, startY + dashWidth), paint);
       startY += dashWidth + dashSpace;
     }
 
-    // Right border
+   
     startY = 0;
     while (startY < size.height) {
       canvas.drawLine(

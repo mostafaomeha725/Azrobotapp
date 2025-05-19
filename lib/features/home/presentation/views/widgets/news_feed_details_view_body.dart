@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PromoteClinicDetailsViewBody extends StatelessWidget {
-  const PromoteClinicDetailsViewBody({super.key, required this.item});
+class NewsFeedDetailsViewBody extends StatelessWidget {
+  const NewsFeedDetailsViewBody({super.key, required this.item});
 
   final Map<String, dynamic> item;
 

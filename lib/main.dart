@@ -16,6 +16,7 @@ import 'package:azrobot/features/games/manager/cubit/get_games_cubit/get_games_c
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_content/cubit/get_all_contents_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_vouchers/cubit/get_voucher_cubits_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_content_category/getcontentcategory_cubit.dart';
+import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/post_view_specific_content/cubit/viewspecificcontent_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/purchase_vouchers/cubit/purchase_vouchers_cubit.dart';
 
@@ -27,15 +28,15 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-    await Hive.initFlutter(); // تهيئة Hive مع Flutter
-    Hive.registerAdapter(ReminderModelAdapter()); // سجل الأدابتور
-    await Hive.openBox<ReminderModel>('reminders'); // ✅ افتح الصندوق هنا
+    await Hive.initFlutter(); 
+    Hive.registerAdapter(ReminderModelAdapter()); 
+    await Hive.openBox<ReminderModel>('reminders'); 
 
   Bloc.observer = SimpleBlocObserve();
       final prefs = await SharedPreferences.getInstance();
      final password = prefs.getString('password');
      final email = prefs.getString('email');
-   // Optional, for custom bloc observing
+ 
   runApp(
     MultiBlocProvider(
       providers: [
@@ -104,6 +105,11 @@ void main() async {
                 ),
                 SharedPreference()
               )..signInUser(email:email! , password:password! ),
+               
+        ),
+         BlocProvider<GetUserPointCubit>(
+          create: (context) =>
+              GetUserPointCubit(ApiService())
                
         ),
       ],

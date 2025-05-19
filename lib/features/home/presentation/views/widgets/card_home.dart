@@ -33,7 +33,6 @@ class CardHome extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
-              // صورة الخلفية من الإنترنت مع لودينغ وصورة بديلة
               Positioned.fill(
                 child: Image.network(
                   image,
@@ -51,7 +50,6 @@ class CardHome extends StatelessWidget {
                 ),
               ),
 
-              // تدرج لوني لتحسين النص
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -67,7 +65,6 @@ class CardHome extends StatelessWidget {
                 ),
               ),
 
-              // الجزء العلوي - عنوان
            Positioned(
   left: 0,
   top: numtop.toDouble(),
@@ -75,7 +72,7 @@ class CardHome extends StatelessWidget {
   child: Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center, // تغيير من start إلى center
+      crossAxisAlignment: CrossAxisAlignment.center, 
       children: [
         Container(
           decoration: const BoxDecoration(
@@ -90,7 +87,7 @@ class CardHome extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: Align( // إضافة Align لمحاذاة النص مع الصورة
+          child: Align( 
             alignment: Alignment.centerLeft,
             child: Text(
               title,
@@ -104,7 +101,6 @@ class CardHome extends StatelessWidget {
     ),
   ),
 ),
-              // الجزء السفلي - وصف وزر See More
               Positioned(
                 bottom: 5,
                 left: 20,

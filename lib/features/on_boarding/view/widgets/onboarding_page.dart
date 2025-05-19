@@ -13,13 +13,13 @@ class OnboardingPage extends StatelessWidget {
         image,
         width:
             MediaQuery.of(context).size.width *
-            0.8, // Adjust width relative to the screen size
+            0.8, 
         height:
             MediaQuery.of(context).size.height *
-            0.5, // Adjust height relative to the screen size
+            0.5, 
         fit:
             BoxFit
-                .cover, // Ensures the image covers the space while maintaining its aspect ratio
+                .cover, 
       ),
     );
   }

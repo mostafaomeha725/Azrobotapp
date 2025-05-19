@@ -42,11 +42,9 @@ class HardCardHome extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // صورة القلب
               Image.asset(
-                image, // <-- استبدل بالمسار الصحيح لأيقونة القلب
-                // width: 100,
-                // height: 100,
+                image, 
+
                 color: Colors.white,
               ),
               const SizedBox(height: 24),

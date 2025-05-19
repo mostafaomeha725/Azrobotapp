@@ -4,6 +4,7 @@ import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'sign_in_state.dart';
 
@@ -54,5 +55,25 @@ class SignInCubit extends Cubit<SignInState> {
 
             // Clear token on logout
             );
+  }
+  
+  
+}
+
+// point_cubit.dart
+
+class PointCubit extends Cubit<String> {
+  PointCubit() : super("0");
+
+  Future<void> loadPoint() async {
+    final prefs = await SharedPreferences.getInstance();
+    final point = prefs.getString("point") ?? "0";
+    emit(point);
+  }
+
+  Future<void> updatePoint(String newPoint) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("point", newPoint);
+    emit(newPoint);
   }
 }

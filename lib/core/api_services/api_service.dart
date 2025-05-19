@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:azrobot/core/api/Api.dart';
 import 'package:azrobot/core/api/end_ponits.dart';
@@ -11,7 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final Dio dio = Dio(); // Initialize Dio for sending requests
+  final Dio dio = Dio(); 
 Future<Either<Failure, SignUpModel>> signUpUser({
   required String name,
   required String email,
@@ -60,7 +59,6 @@ Future<Either<Failure, SignUpModel>> signUpUser({
     return Left(Failure(errorMessage));
   }
 }
-
  Future<Either<Failure, SignInModel>> signInUser({
   required String email,
   required String password,
@@ -79,15 +77,13 @@ Future<Either<Failure, SignUpModel>> signUpUser({
     (data) async {
       final token = data['data']['token'];
       final userId = data['data']['user']['id'].toString();
-      final point = data['data']['user']['points'];
+    final   point = data['data']['user']['points'];
       final email = data['data']['user']['email'];
-      print(point);
 
-      // حفظ البيانات في SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("token", token);
+      await prefs.setString("user_token", token);
       await prefs.setString("userId", userId);
-      await prefs.setString("point", point);
+      await prefs.setString("point", point!);
       await prefs.setString("email", email);
 
       return Right(SignInModel.fromJson(data));
@@ -246,6 +242,16 @@ Future<Either<Failure, Map<String, dynamic>>> getUserVouchers(String userId) asy
 }
 
 
+Future<Either<Failure, Map<String, dynamic>>> getuserpoint(String userId) async {
+  final result = await Api().get(
+    name: 'users/$userId/points',
+    errMessage: 'Failed to get user points',
+    withAuth: true,
+  );
+
+  return result;
+}
+
 Future<Either<Failure, Map<String, dynamic>>> purchaseVoucher(int voucherId) async {
   final response = await Api().post(
     name: 'vouchers/purchase?voucher_id=$voucherId',
@@ -299,7 +305,7 @@ Future<Either<Failure, Map<String, dynamic>>> viewSpecificContent(int contentId)
 Future<Either<Failure, List<dynamic>>> getGames() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+      final token = prefs.getString('user_token');
 
       if (token == null) {
         return Left(ServerFailure('Token غير موجود'));

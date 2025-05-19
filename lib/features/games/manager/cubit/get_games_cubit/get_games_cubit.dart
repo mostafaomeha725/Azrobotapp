@@ -16,7 +16,7 @@ class GetGamesCubit extends Cubit<GetGamesState> {
     
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+      final token = prefs.getString('user_token');
 
       if (token == null) {
         emit(GetGamesFailure('Token غير موجود'));

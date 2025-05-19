@@ -17,7 +17,6 @@ class _NewsFeedViewBodyState extends State<NewsFeedViewBody> {
   @override
   void initState() {
     super.initState();
-    // استدعاء المحتوى حسب الفئة (يمكن تغيير الرقم 2 حسب الفئة المطلوبة)
     context.read<GetContentByCategoryCubit>().getContentByCategory(5);
   }
 
@@ -49,7 +48,7 @@ class _NewsFeedViewBodyState extends State<NewsFeedViewBody> {
                     onTap: () {
                       context.push(
                         AppRouter.kLifeStyleDetailsView,
-                        extra: item, // إرسال بيانات العنصر للصفحة التالية
+                        extra: item, 
                       );
                     },
                     child: CardHome(
@@ -65,7 +64,7 @@ class _NewsFeedViewBodyState extends State<NewsFeedViewBody> {
           );
         }
 
-        return const SizedBox(); // الحالة الابتدائية
+        return const SizedBox(); 
       },
     );
   }

@@ -40,7 +40,6 @@ class VideoViewBody extends StatelessWidget {
                 final title = content['title']?.toString() ?? 'No Title';
                 final videoUrl = content['video']?.toString() ?? '';
 
-                // Debug print for each item
                 debugPrint('Video Content: $content');
 
                 return GestureDetector(
@@ -91,6 +90,7 @@ class VideoViewBody extends StatelessWidget {
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
+                                  // ignore: deprecated_member_use
                                   Colors.black.withOpacity(0.7),
                                 ],
                               ),

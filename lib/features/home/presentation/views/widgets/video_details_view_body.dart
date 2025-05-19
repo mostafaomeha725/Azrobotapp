@@ -144,7 +144,6 @@ class VideoDetailsViewBody extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Column(
-                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         item['source'] != null ? 'Source: ${item['source']}' : '',
@@ -161,25 +160,7 @@ class VideoDetailsViewBody extends StatelessWidget {
                         style: TextStyles.bold16w400),
                   ),
                   const SizedBox(height: 16),
-                  // if (item['video_url'] != null)
-                  //   Column(
-                  //     children: [
-                  //       const Divider(),
-                  //       const Text(
-                  //         'Related Video:',
-                  //         style: TextStyle(fontWeight: FontWeight.bold),
-                  //       ),
-                  //       InkWell(
-                  //         onTap: () {
-                  //           // افتح رابط الفيديو
-                  //         },
-                  //         child: Text(
-                  //           item['video_url'],
-                  //           style: const TextStyle(color: Colors.blue),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
+                
                 ],
               ),
             ),

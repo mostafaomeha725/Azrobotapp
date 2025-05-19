@@ -86,7 +86,7 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
                   child: Align(
                     alignment:
                         Alignment
-                            .center, // Align the image to the center of the screen
+                            .center, 
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 125),
                       child: OnboardingPage(image: data['image']!),
@@ -98,13 +98,13 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
           },
         ),
 
-        // Skip Button
+       
         Positioned(
           top: 60,
           right: 20,
           child: TextButton(
             onPressed: () {
-             GoRouter.of(context).pushReplacement(AppRouter.kSignUpView);
+             GoRouter.of(context).pushReplacement(AppRouter.kLoginView);
             },
             child: Text(
               "Skip",
@@ -115,7 +115,6 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
           ),
         ),
 
-        // Dot Indicator
         Positioned(
           bottom: 40,
           left: 20,
@@ -156,7 +155,6 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
             ),
           ),
         ),
-        // Next / Get Started Button
         Positioned(
           bottom: 70,
           left: 0,

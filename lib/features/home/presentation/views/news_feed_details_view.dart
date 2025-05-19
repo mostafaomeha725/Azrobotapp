@@ -1,20 +1,21 @@
 import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/post_view_specific_content/cubit/viewspecificcontent_cubit.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/Life_style_details_view_body.dart';
+import 'package:azrobot/features/home/presentation/views/widgets/news_feed_details_view_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LifeStyleDetailsView extends StatefulWidget {
-  const LifeStyleDetailsView({super.key, required this.item});
+class NewsFeedDetailsView extends StatefulWidget {
+  const NewsFeedDetailsView({super.key, required this.item});
   final Map<String, dynamic> item;
 
   @override
-  State<LifeStyleDetailsView> createState() => _LifeStyleDetailsViewState();
+  State<NewsFeedDetailsView> createState() => _NewsFeedDetailsViewState();
 }
 
 
-class _LifeStyleDetailsViewState extends State<LifeStyleDetailsView> {
+class _NewsFeedDetailsViewState extends State<NewsFeedDetailsView> {
 
 
   @override
@@ -38,7 +39,7 @@ class _LifeStyleDetailsViewState extends State<LifeStyleDetailsView> {
         );
       }
       },
-      child:    Scaffold(body: LifeStyleDetailsViewBody(item: widget.item)),
+      child:    Scaffold(body: NewsFeedDetailsViewBody(item: widget.item)),
     );
   }
 }

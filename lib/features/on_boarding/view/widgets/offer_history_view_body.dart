@@ -48,7 +48,7 @@ class _OffersHistoryViewBodyState extends State<OffersHistoryViewBody>
           ),
         ),
 
-        // TabBarView
+       
         Expanded(
           child: TabBarView(
             controller: _tabController,

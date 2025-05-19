@@ -1,4 +1,3 @@
-import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/core/utils/app_text_styles.dart';
@@ -19,11 +18,13 @@ class RemindersView extends StatefulWidget {
 class _RemindersViewState extends State<RemindersView> {
 String? userId;
   
+  // ignore: unused_element
   Future<void> _loadUserIdAndReminders() async {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getString("userId");
 
     if (userId != null) {
+      // ignore: use_build_context_synchronously
       context.read<ReminderCubit>().loadReminders(userId!);
     } else {
       debugPrint("userId not found");
@@ -39,18 +40,18 @@ String? userId;
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              height: 40, // الحجم الذي تريده
-              width: 40, // الحجم الذي تريده
+              height: 40,
+              width: 40, 
               decoration: BoxDecoration(
-                color: Color(0xFF0062CC), // اللون الأزرق
+                color: Color(0xFF0062CC), 
                 borderRadius:
-                    BorderRadius.circular(10), // تحديد الحواف الدائرية
+                    BorderRadius.circular(10), 
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.chevron_left_sharp, // أيقونة العودة
-                  color: Colors.white, // لون الأيقونة الأبيض
-                  size: 24, // حجم الأيقونة
+                  Icons.chevron_left_sharp,
+                  color: Colors.white, 
+                  size: 24, 
                 ),
                 onPressed: () {
                   if (context.canPop()) {
@@ -58,7 +59,7 @@ String? userId;
                   } else {
                     context.go(
                       AppRouter.kBersistentBottomNavBarView,
-                    ); // or wherever you want
+                    ); 
                   }
                 },
               ),

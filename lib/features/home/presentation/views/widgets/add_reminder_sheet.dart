@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AddReminderSheet {
  
   
+  // ignore: unused_element
   Future<void> _loadUserIdAndReminders() async {
      String? userId;
     final prefs = await SharedPreferences.getInstance();
@@ -149,15 +150,18 @@ class AddReminderSheet {
     final userId = prefs.getString("userId");
 
     if (userId != null) {
+      // ignore: use_build_context_synchronously
       context.read<ReminderCubit>().addReminder(
         reminderText: message,
         dateTime: date,
         repeat: selectedRepeat,
         userId: userId,
       );
+      // ignore: use_build_context_synchronously
       GoRouter.of(context).pop();
     } else {
       // التعامل مع حالة عدم وجود userId
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("User ID not found. Please login again.")),
       );

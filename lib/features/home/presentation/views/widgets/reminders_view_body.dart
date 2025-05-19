@@ -26,6 +26,7 @@ class _RemindersViewBodyState extends State<RemindersViewBody> {
     userId = prefs.getString("userId");
 
     if (userId != null) {
+      // ignore: use_build_context_synchronously
       context.read<ReminderCubit>().loadReminders(userId!);
     } else {
       debugPrint("userId not found");
@@ -65,7 +66,7 @@ class _RemindersViewBodyState extends State<RemindersViewBody> {
                           repeat: reminder.repeat,
                           dateTime: reminder.dateTime,
                           
-                          userId: userId!, index: index, // تمرير userId هنا
+                          userId: userId!, index: index, 
                         ),
                       );
                     },

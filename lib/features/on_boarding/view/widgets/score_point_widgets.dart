@@ -29,7 +29,7 @@ class ScorePointWidgets extends StatelessWidget {
                 "$point points",
                 style: TextStyles.bold12w400inter.copyWith(
                   color: Colors.white,
-                ), // Adjust text color
+                ), 
               ),
             ],
           ),

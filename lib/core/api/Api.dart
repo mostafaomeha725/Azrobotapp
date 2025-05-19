@@ -41,6 +41,7 @@ class Api {
             response.data['message'] ?? errMessage ?? 'Request failed';
         return Left(ServerFailure(errorMessage));
       }
+    // ignore: deprecated_member_use
     } on DioError catch (e) {
       return Left(ServerFailure.fromDioError(e));
     } catch (e) {
@@ -80,6 +81,7 @@ class Api {
       final errorMessage =
           response.data['message'] ?? errMessage ?? 'Request failed';
       return Left(ServerFailure(errorMessage));
+    // ignore: deprecated_member_use
     } on DioError catch (e) {
       return Left(ServerFailure.fromDioError(e));
     } catch (e) {

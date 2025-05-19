@@ -44,7 +44,7 @@ class _PromoteClinicViewBodyState extends State<PromoteClinicViewBody> {
                 final item = contents[index] as Map<String, dynamic>;
                 return Container(
                   margin: const EdgeInsets.only(
-                      bottom: 16), // Add spacing between cards
+                      bottom: 16), 
                   child: GestureDetector(
                     onTap: () {
                       context.push(
@@ -55,7 +55,7 @@ class _PromoteClinicViewBodyState extends State<PromoteClinicViewBody> {
                     child: CardHome(
                       numtop: 100,
                       image: item['image_url'] ??
-                          Assets.assetshub, // Fallback to local asset
+                          Assets.assetshub, 
                       title: item['title'] ?? 'No title',
                       discription: item['description'] ?? 'No description',
                     ),

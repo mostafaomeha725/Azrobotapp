@@ -2,6 +2,7 @@ import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_content_category/getcontentcategory_cubit.dart';
+import 'package:azrobot/features/home/presentation/views/medical_hub_details_view.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/appbar_text_widget.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/card_today_tips.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/hard_card_home.dart';
@@ -21,7 +22,6 @@ class HomeViewBody extends StatefulWidget {
 }
 class HomeViewBodyState extends State<HomeViewBody> {
   String? userId;
-  String? point;
 
   @override
   void initState() {
@@ -33,12 +33,10 @@ class HomeViewBodyState extends State<HomeViewBody> {
   Future<void> _loadUserIdAndReminders() async {
     final prefs = await SharedPreferences.getInstance();
     final fetchedUserId = prefs.getString("userId");
-    final fetchedPoint = prefs.getString("point");
 
     if (mounted) {
       setState(() {
         userId = fetchedUserId;
-        point = fetchedPoint;
       });
     }
 
@@ -49,22 +47,14 @@ class HomeViewBodyState extends State<HomeViewBody> {
     }
   }
 
-  Future<void> loadPoint() async {
-    final prefs = await SharedPreferences.getInstance();
-    final newPoint = prefs.getString("point");
-    if (mounted) {
-      setState(() {
-        point = newPoint;
-      });
-    }
-  }
+  
 
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-         SliverToBoxAdapter(child: UpwidgetHome(point: point??"0",)),
+         SliverToBoxAdapter(child: UpwidgetHome()),
         const SliverToBoxAdapter(child: CardTodayTips()),
         SliverToBoxAdapter(
           child: SizedBox(
@@ -89,7 +79,7 @@ class HomeViewBodyState extends State<HomeViewBody> {
                   );
                 }
 
-                return const SizedBox(); // Default return for initial state
+                return const SizedBox(); 
               },
             ),
           ),
@@ -114,12 +104,11 @@ class HomeViewBodyState extends State<HomeViewBody> {
         } else if (state is ReminderFailure) {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is ReminderSuccess) {
-          final reminders = state.reminders.reversed.toList(); // عرض الأحدث أولاً
+          final reminders = state.reminders.reversed.toList(); 
           if (reminders.isEmpty) {
             return const Center(child: Text('No reminders yet.'));
           }
 
-          // عرض أول تذكير فقط كمثال
           final reminder = reminders.first;
 
           return ReminderCardWidget(

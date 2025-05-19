@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreference {
+  Future<String?> getpoint(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(key);
+}
+
   // Save token to SharedPreferences
   Future<void> saveToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -168,6 +173,7 @@ Future<void> saveVoucherData(Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear(); // مسح جميع البيانات
   }
+   // ignore: unused_field
    static const String _userIdKey = 'user_id';
 
 

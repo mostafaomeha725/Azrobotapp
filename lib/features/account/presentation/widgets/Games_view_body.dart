@@ -1,11 +1,13 @@
 import 'package:azrobot/features/games/manager/cubit/add_game_point_cubit/add_game_point_cubit.dart';
 import 'package:azrobot/features/games/manager/cubit/get_games_cubit/get_games_cubit.dart';
+import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/features/account/presentation/widgets/games_card_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GamesViewBody extends StatefulWidget {
   const GamesViewBody({super.key});
@@ -55,7 +57,12 @@ class _GamesViewBodyState extends State<GamesViewBody> {
     return BlocListener<AddGamePointCubit, AddGamePointState>(
       listenWhen: (previous, current) =>
           current is AddGamePointSuccess || current is AddGamePointFailure,
-      listener: (context, state) {
+      listener: (context, state) async{
+                    final prefs = await SharedPreferences.getInstance();
+
+                  final userId = prefs.getString('userId');
+
+            context.read<GetUserPointCubit>().getUserPoints(userId!);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
         if (selectedRoute != null) {
