@@ -35,7 +35,6 @@ void main() async {
       final prefs = await SharedPreferences.getInstance();
      final password = prefs.getString('password');
      final email = prefs.getString('email');
-     print(email);
    // Optional, for custom bloc observing
   runApp(
     MultiBlocProvider(

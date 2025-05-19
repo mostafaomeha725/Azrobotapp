@@ -104,7 +104,7 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
           right: 20,
           child: TextButton(
             onPressed: () {
-              _pageController.jumpToPage(onboardingData.length - 1);
+             GoRouter.of(context).pushReplacement(AppRouter.kSignUpView);
             },
             child: Text(
               "Skip",

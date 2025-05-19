@@ -21,7 +21,7 @@ class AccountViewBody extends StatelessWidget {
             ),
           );
 
-          GoRouter.of(context).go(AppRouter.kLoginView);
+          GoRouter.of(context).pushReplacement(AppRouter.kLoginView);
 
 
       
