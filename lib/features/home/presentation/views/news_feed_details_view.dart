@@ -1,6 +1,5 @@
 import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/post_view_specific_content/cubit/viewspecificcontent_cubit.dart';
-import 'package:azrobot/features/home/presentation/views/widgets/Life_style_details_view_body.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/news_feed_details_view_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +19,6 @@ class _NewsFeedDetailsViewState extends State<NewsFeedDetailsView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<ViewspecificcontentCubit>().fetchContent(widget.item['id']);
   }
@@ -33,7 +31,9 @@ class _NewsFeedDetailsViewState extends State<NewsFeedDetailsView> {
 
                   final userId = prefs.getString('userId');
 
+            // ignore: use_build_context_synchronously
             context.read<GetUserPointCubit>().getUserPoints(userId!);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Points Earned: ${state.content['points_earned']}'),),
         );

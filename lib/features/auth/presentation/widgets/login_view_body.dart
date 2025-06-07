@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/core/widgets/Custom_buttom.dart';
 import 'package:azrobot/core/widgets/custom_text_field.dart';
-import 'package:azrobot/features/auth/presentation/widgets/forget_password_text.dart';
 import 'package:azrobot/features/auth/presentation/widgets/hint_text_auth.dart';
 import 'package:azrobot/features/auth/presentation/widgets/login_text.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +63,7 @@ class LoginViewBody extends StatelessWidget {
                 active: true,
               ),
               const SizedBox(height: 12),
-              const ForgetPasswordText(),
+             // const ForgetPasswordText(),
               const SizedBox(height: 24),
               BlocConsumer<SignInCubit, SignInState>(
                 listener: (context, state) async {
@@ -81,6 +80,7 @@ class LoginViewBody extends StatelessWidget {
                        final prefs = await SharedPreferences.getInstance();
       await prefs.setString("password", password!);
 await Future.delayed(const Duration(milliseconds: 200));
+                    // ignore: use_build_context_synchronously
                     GoRouter.of(context)
                         .pushReplacement(AppRouter.kBersistentBottomNavBarView);
                   } else if (state is SignInFailure) {
@@ -103,7 +103,6 @@ GoRouter.of(context).pop();
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         formKey.currentState!.save();
-                        // Trigger the login process with cubit
                         await context.read<SignInCubit>().signInUser(
                               email: email!,
                               password: password!,

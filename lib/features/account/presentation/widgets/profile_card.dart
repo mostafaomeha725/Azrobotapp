@@ -1,15 +1,18 @@
 import 'package:azrobot/core/api/end_ponits.dart';
+import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_text_styles.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/get_all_spe_cialties_cubits/cubit/getallspecialties_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/manager/cubits/get_all_city_cubit/getallcity_cubit.dart';
 
 class ProfileCard extends StatelessWidget {
-  const ProfileCard({super.key});
-
+   ProfileCard({super.key});
+String? special;
+String? cityName;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
@@ -19,7 +22,6 @@ class ProfileCard extends StatelessWidget {
         } else if (state is ProfileSuccess) {
           final profile = state.profileData;
           
-          // Convert IDs to integers if they come as strings
           final cityId = int.tryParse(profile[ApiKey.data][ApiKey.user][ApiKey.cityId].toString()) ?? 0;
           final specialId = int.tryParse(profile[ApiKey.data][ApiKey.user][ApiKey.specialId].toString()) ?? 0;
 
@@ -35,6 +37,19 @@ class ProfileCard extends StatelessWidget {
                 children: [
                   const SizedBox(height: 6),
                   ListTile(
+                    trailing: GestureDetector(
+                      onTap: () {
+                       GoRouter.of(context).push(
+  AppRouter.kEditprofileview,
+  extra: {
+    "profile": profile,
+    "special": special,
+    "cityName": cityName,
+  },
+);
+
+                      },
+                      child: Icon(Icons.edit,color: Color(0xFF0062CC) ,)),
                     leading: const CircleAvatar(
                       radius: 32,
                       backgroundImage: AssetImage('assets/profile.png'),
@@ -58,7 +73,7 @@ class ProfileCard extends StatelessWidget {
                       children: [
                         BlocBuilder<GetallspecialtiesCubit, SpecialtiesState>(
                           builder: (context, state) {
-                            final special = context
+                             special = context
                                 .read<GetallspecialtiesCubit>()
                                 .getSpecialNameById(specialId);
                             return Text(
@@ -71,7 +86,7 @@ class ProfileCard extends StatelessWidget {
                         ),
                         BlocBuilder<GetallcityCubit, GetallcityState>(
                           builder: (context, state) {
-                            final cityName = context
+                             cityName = context
                                 .read<GetallcityCubit>()
                                 .getCityNameById(cityId);
                             return Text(

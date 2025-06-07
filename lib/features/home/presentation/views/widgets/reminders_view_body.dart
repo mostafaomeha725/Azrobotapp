@@ -50,7 +50,9 @@ class _RemindersViewBodyState extends State<RemindersViewBody> {
                 } else if (state is ReminderFailure) {
                   return Center(child: Text('Error: ${state.message}'));
                 } else if (state is ReminderSuccess) {
-                  final reminders = state.reminders;
+                  final originalReminders = state.reminders;
+                  final reminders = originalReminders.reversed.toList(); // ← عكس الترتيب
+
                   if (reminders.isEmpty) {
                     return const Center(child: Text('No reminders yet.'));
                   }
@@ -59,14 +61,15 @@ class _RemindersViewBodyState extends State<RemindersViewBody> {
                     itemCount: reminders.length,
                     itemBuilder: (context, index) {
                       final reminder = reminders[index];
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12.0),
                         child: ReminderCardWidget(
                           title: reminder.reminderText,
                           repeat: reminder.repeat,
                           dateTime: reminder.dateTime,
-                          
-                          userId: userId!, index: index, 
+                          userId: userId!,
+                          index: originalReminders.indexOf(reminder), // ← استخدام index الأصلي
                         ),
                       );
                     },

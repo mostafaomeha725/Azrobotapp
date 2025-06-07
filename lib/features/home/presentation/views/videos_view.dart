@@ -10,41 +10,18 @@ class VideosView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            height: 40, 
-            width: 40,
-            decoration: BoxDecoration(
-              color: Color(0xFF0062CC), 
-              borderRadius: BorderRadius.circular(10), 
+      
+        title: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.center, 
+          children: [
+            Image.asset(Assets.assetsazrobotlogoonly, height: 32),
+            SizedBox(width: 8),
+            Text(
+              'Videos',
+              style: TextStyles.bold20w600.copyWith(color: Color(0xFF0062CC)),
             ),
-            child: IconButton(
-              icon: Icon(
-                Icons.chevron_left_sharp, 
-                color: Colors.white,
-                size: 24,
-              ),
-              onPressed: () {
-              
-              },
-            ),
-          ),
-        ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 50),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center, 
-            children: [
-              Image.asset(Assets.assetsazrobotlogoonly, height: 32),
-              SizedBox(width: 8),
-              Text(
-                'Videos',
-                style: TextStyles.bold20w600.copyWith(color: Color(0xFF0062CC)),
-              ),
-            ],
-          ),
+          ],
         ),
         backgroundColor: Colors.white,
         elevation: 0,

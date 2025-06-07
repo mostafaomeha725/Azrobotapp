@@ -1,6 +1,5 @@
 
 
-import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/features/account/data/note_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';

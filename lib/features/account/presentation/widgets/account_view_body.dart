@@ -1,5 +1,4 @@
 import 'package:azrobot/core/app_router/app_router.dart';
-import 'package:azrobot/features/account/presentation/widgets/language_card.dart';
 import 'package:azrobot/features/account/presentation/widgets/more_card.dart';
 import 'package:azrobot/features/account/presentation/widgets/profile_card.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/sign_out_cubit/cubit/sign_out_cubit.dart';
@@ -35,7 +34,7 @@ class AccountViewBody extends StatelessWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              const ProfileCard(key: ValueKey('profile_card')),
+               ProfileCard(key: ValueKey('profile_card')),
               const SizedBox(height: 8),
            
               MoreCard(
@@ -50,11 +49,18 @@ class AccountViewBody extends StatelessWidget {
                 key: const ValueKey('privacy_policy'),
                 icon: Icons.local_police_outlined, 
                 title: 'Privacy Policy',
+                onTap: () {
+                    GoRouter.of(context).push(AppRouter.kPrivacyPolicyview);
+                },
               ),
+              
               MoreCard(
                 key: const ValueKey('terms_conditions'),
                 icon: Icons.privacy_tip_outlined,
                 title: 'Terms & Conditions',
+                onTap: () {
+                  GoRouter.of(context).push(AppRouter.kTermsConditionView);
+                },
               ),
               const SizedBox(height: 56),
               MoreCard(

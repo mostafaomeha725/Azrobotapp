@@ -92,7 +92,7 @@ _loadUserIdAndFetchVouchers();
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
-                                  offer["description"] ?? '',
+                                  offer["description"] ?? '',maxLines: 5,
                                   style: TextStyles.bold12w400.copyWith(color: Colors.grey),
                                 ),
                               ),

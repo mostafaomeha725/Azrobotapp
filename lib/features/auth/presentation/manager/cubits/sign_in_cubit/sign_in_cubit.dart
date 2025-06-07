@@ -2,7 +2,6 @@ import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/helper/shared_preferences/shared_preferences.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/profile_cubit.dart';
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

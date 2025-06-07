@@ -43,22 +43,22 @@ Future<Either<Failure, SignUpModel>> signUpUser({
     if (response.statusCode == 200) {
       return Right(SignUpModel.fromJson(response.data));
     } else {
-      final errorMsg = response.data['message'] ?? 'حدث خطأ غير متوقع';
+      final errorMsg = response.data['message']?.toString() ?? 'An unexpected error occurred';
       return Left(Failure(errorMsg));
     }
   } catch (e) {
     String errorMessage;
 
-    // تحقق من وجود نوع الخطأ المحدد
     if (e.toString().contains("type 'String' is not a subtype of type 'int'")) {
-      errorMessage = " Email or Mobile already exist";
+      errorMessage = 'Email or Mobile already Exist';
     } else {
-      errorMessage = 'حدث خطأ في الاتصال: ${e.toString()}';
+      errorMessage = 'There was an error connecting to the server: ${e.toString()}';
     }
 
     return Left(Failure(errorMessage));
   }
 }
+
  Future<Either<Failure, SignInModel>> signInUser({
   required String email,
   required String password,
@@ -160,7 +160,6 @@ Future<Either<Failure, SignUpModel>> signUpUser({
       withAuth: true,
     );
 
-    // حفظ البيانات إذا نجح الطلب
     result.fold(
       (failure) => null,
       (data) async => await SharedPreference().saveProfileData(data),
@@ -289,7 +288,7 @@ Future<Either<Failure, Map<String, dynamic>>> viewSpecificContent(int contentId)
   final response = await Api().post(
     name: 'content/view?content_id=$contentId',
     withAuth: true,
-    errMessage: 'فشل في عرض المحتوى',
+    errMessage:'Failed to display content',
   );
 
   return response.fold(
@@ -308,7 +307,7 @@ Future<Either<Failure, List<dynamic>>> getGames() async {
       final token = prefs.getString('user_token');
 
       if (token == null) {
-        return Left(ServerFailure('Token غير موجود'));
+        return Left(ServerFailure('Token not found'));
       }
 
       final response = await dio.get(
@@ -324,13 +323,35 @@ Future<Either<Failure, List<dynamic>>> getGames() async {
       if (response.statusCode == 200 && response.data is List) {
         return Right(response.data);
       } else {
-        return Left(ServerFailure('خطأ في تحميل البيانات'));
+        return Left(ServerFailure('Error loading data'));
       }
     } catch (e) {
-      return Left(ServerFailure('حدث خطأ أثناء الاتصال بالخادم'));
+      return Left(ServerFailure('An error occurred while connecting to the server'));
     }
   }
   
 
+  Future<Either<Failure, Map<String, dynamic>>> updateProfile({
+    required String name,
+    required String mobile,
+    required String mainCity,
+    required String specialty,
+  }) async {
+    return await Api().put(
+   name: 'profile',
+      withAuth: true,
+      body: {
+        "name": name,
+        "mobile": mobile,
+        "city_id": mainCity,
+        "specialty_id": specialty,
+      },
+      errMessage: "Failed to update profile",
+    );
+  }
+
+  
+
 
 }
+

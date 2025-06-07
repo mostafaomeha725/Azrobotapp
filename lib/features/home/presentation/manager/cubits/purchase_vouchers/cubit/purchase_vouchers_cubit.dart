@@ -1,7 +1,5 @@
 import 'package:azrobot/core/api_services/api_service.dart';
-import 'package:azrobot/core/helper/shared_preferences/shared_preferences.dart';
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 
 part 'purchase_vouchers_state.dart';
 

@@ -27,14 +27,10 @@ class ReminderCardWidget extends StatelessWidget {
   });
 
   void _showUpdateReminderDialog(BuildContext context) {
-    // ignore: no_leading_underscores_for_local_identifiers
     final _titleController = TextEditingController(text: title);
-    // ignore: no_leading_underscores_for_local_identifiers
     final _dateController = TextEditingController(text: dateTime);
-    // ignore: no_leading_underscores_for_local_identifiers
     String _selectedRepeat = repeat;
 
-    // ignore: no_leading_underscores_for_local_identifiers
     Future<void> _selectDateTime(BuildContext context) async {
       DateTime? selectedDate = await showDatePicker(
         context: context,
@@ -45,7 +41,6 @@ class ReminderCardWidget extends StatelessWidget {
 
       if (selectedDate != null) {
         TimeOfDay? selectedTime = await showTimePicker(
-          // ignore: use_build_context_synchronously
           context: context,
           initialTime: TimeOfDay.now(),
         );
@@ -135,48 +130,79 @@ class ReminderCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff134FA2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          final userId = prefs.getString("userId");
+                          if (userId != null) {
+                            context.read<ReminderCubit>().deleteReminder(
+                                  userId: userId,
+                                  index: index,
+                                );
+                            GoRouter.of(context).pop();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("User ID not found. Please login again.")),
+                            );
+                          }
+                        },
+                        child: Text(
+                          "Delete",
+                          style: TextStyles.bold12w500.copyWith(color: Colors.white),
+                        ),
                       ),
-                    ),
-                    onPressed: () async {
-                      final date = _dateController.text;
-                      final message = _titleController.text;
-                      final repeatValue = _selectedRepeat;
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff134FA2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final date = _dateController.text;
+                          final message = _titleController.text;
+                          final repeatValue = _selectedRepeat;
 
-                      if (date.isNotEmpty && message.isNotEmpty) {
-                        final prefs = await SharedPreferences.getInstance();
-                        final userId = prefs.getString("userId");
+                          if (date.isNotEmpty && message.isNotEmpty) {
+                            final prefs = await SharedPreferences.getInstance();
+                            final userId = prefs.getString("userId");
 
-                        if (userId != null) {
-                          final updatedReminder = ReminderModel(
-                            dateTime: date, 
-                            reminderText: message,
-                            repeat: repeatValue, 
-                          );
+                            if (userId != null) {
+                              final updatedReminder = ReminderModel(
+                                dateTime: date,
+                                reminderText: message,
+                                repeat: repeatValue,
+                              );
 
-                          // ignore: use_build_context_synchronously
-                          context.read<ReminderCubit>().updateReminder(
-                            userId: userId,
-                            updatedReminder: updatedReminder,
-                            index: index,
-                          );
+                              context.read<ReminderCubit>().updateReminder(
+                                    userId: userId,
+                                    updatedReminder: updatedReminder,
+                                    index: index,
+                                  );
 
-                          GoRouter.of(context).pop();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("User ID not found. Please login again.")),
-                          );
-                        }
-                      }
-                    },
-                    child: Text(
-                      "Set",
-                      style: TextStyles.bold12w500.copyWith(color: Colors.white),
-                    ),
+                              GoRouter.of(context).pop();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("User ID not found. Please login again.")),
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          "Set",
+                          style: TextStyles.bold12w500.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -189,7 +215,9 @@ class ReminderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
+    return GestureDetector(
+      onTap: () => _showUpdateReminderDialog(context),
+      child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFF41D5C5),
@@ -205,14 +233,15 @@ class ReminderCardWidget extends StatelessWidget {
                 Text("$repeat - $dateTime", style: const TextStyle(color: Colors.white70)),
               ],
             ),
-            ishome ? GestureDetector(
-              onTap: (){
-                _showUpdateReminderDialog(context);
-              },
-              child: const Icon(Icons.edit, color: Colors.white)) : SizedBox(),
+            ishome
+                ? IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.white),
+                    onPressed: () => _showUpdateReminderDialog(context),
+                  )
+                : SizedBox(),
           ],
         ),
-      
+      ),
     );
   }
 }

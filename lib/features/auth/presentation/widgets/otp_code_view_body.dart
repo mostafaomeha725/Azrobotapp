@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_text_styles.dart';
+import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/profile_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reset_otp_cubit/reset_otp_cubit.dart';
+import 'package:azrobot/features/auth/presentation/manager/cubits/sign_in_cubit/sign_in_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,17 +11,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class OtpCodeViewBody extends StatefulWidget {
-  const OtpCodeViewBody({super.key, required this.email});
+  const OtpCodeViewBody({super.key, required this.email, required this.password});
   final String email;
+  final String password;
 
   @override
+  // ignore: library_private_types_in_public_api
   _OtpCodeViewBodyState createState() => _OtpCodeViewBodyState();
 }
 
 class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
   final List<TextEditingController> _controllers =
       List.generate(4, (index) => TextEditingController());
-  int _remainingTime = 120; // 2 minutes countdown
+  int _remainingTime = 120;
   late Timer _timer;
 
   @override
@@ -30,6 +34,7 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
       setState(() {
         if (_remainingTime > 0) {
           _remainingTime--;
@@ -40,9 +45,15 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
     });
   }
 
-  void _verifyOTP(BuildContext context) {
+  void _verifyOTP(BuildContext context) async {
     String otp = _controllers.map((controller) => controller.text).join();
-    print(otp);
+
+    if (otp.length < 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a 4-digit code")),
+      );
+      return;
+    }
 
     context.read<VerifyOtpCubit>().verifyOtp(
           email: widget.email,
@@ -52,8 +63,6 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
   }
 
   void _resendOTP(BuildContext context) {
-    
-
     setState(() {
       _remainingTime = 120;
     });
@@ -103,6 +112,7 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
                 width: 65,
                 height: 65,
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.grey.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -129,7 +139,7 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
             }),
           ),
           const SizedBox(height: 30),
-          // Timer and Resend Code
+          // Timer and Resend
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -145,8 +155,7 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
                   'Resend code',
                   style: TextStyles.bold16w600.copyWith(
                     decoration: TextDecoration.underline,
-                    color: 
-                         const Color(0xff134FA2),
+                    color: const Color(0xff134FA2),
                   ),
                 ),
               ),
@@ -167,13 +176,26 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
               ),
             ),
           ),
+          const SizedBox(height: 20),
+
           BlocConsumer<VerifyOtpCubit, VerifyOtpState>(
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is VerifyOtpSuccess) {
+                await context.read<SignInCubit>().signInUser(
+                      email: widget.email,
+                      password: widget.password,
+                    );
+                await Future.delayed(const Duration(milliseconds: 200));
+                if (!mounted) return;
+                // ignore: use_build_context_synchronously
+                await context.read<ProfileCubit>().getProfile();
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("OTP verified successfully")),
                 );
-                GoRouter.of(context).pushReplacement(AppRouter.kLoginView);
+                if (!mounted) return;
+                // ignore: use_build_context_synchronously
+                GoRouter.of(context).pushReplacement(AppRouter.kBersistentBottomNavBarView);
               } else if (state is VerifyOtpFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.errMessage)),
@@ -182,9 +204,12 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
             },
             builder: (context, state) {
               if (state is VerifyOtpLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: CircularProgressIndicator(),
+                );
               }
-              return Container();
+              return const SizedBox.shrink();
             },
           ),
           BlocConsumer<ResetOtpCubit, ResetOtpState>(
@@ -201,9 +226,12 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
             },
             builder: (context, state) {
               if (state is ResetOtpLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: CircularProgressIndicator(),
+                );
               }
-              return Container();
+              return const SizedBox.shrink();
             },
           ),
         ],
@@ -211,4 +239,3 @@ class _OtpCodeViewBodyState extends State<OtpCodeViewBody> {
     );
   }
 }
-

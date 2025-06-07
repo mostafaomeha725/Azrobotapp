@@ -1,4 +1,7 @@
+import 'package:azrobot/features/account/presentation/views/edit_profile_view.dart';
 import 'package:azrobot/features/account/presentation/views/games_view.dart';
+import 'package:azrobot/features/account/presentation/views/privacy_police_view.dart';
+import 'package:azrobot/features/account/presentation/views/terms_condition_view.dart';
 import 'package:azrobot/features/auth/presentation/views/forget_password_view.dart';
 import 'package:azrobot/features/auth/presentation/views/login_view.dart';
 import 'package:azrobot/features/auth/presentation/views/otp_code_view.dart';
@@ -39,7 +42,8 @@ abstract class AppRouter {
     static const kNewsFeed = '/NewsFeedView';
   static const kLifeStyleDetailsView = '/LifeStyleDetailsView';
   static const kVideoDetailsView = '/VideoDetailsView';
-
+    static const kTermsConditionView = '/TermsConditionView';
+        static const kPrivacyPolicyview = '/privacypolicyview';
   static const kOfferHistoryView = '/OfferHistoryView';
   static const kRemindersView = '/RemindersView';
   static const kXoGamesView = '/XoGamesView';
@@ -47,6 +51,8 @@ abstract class AppRouter {
   static const kLuckyDrawSpinView = '/LuckyDrawSpinView';
   static const kSlotMachineGameView = '/SlotMachineGameView';
   static const kGamesView = '/GamesView';
+    static const kEditprofileview = '/Editprofileview';
+
 
   static GoRouter getRouter(String initialRoute) {
     return GoRouter(
@@ -69,15 +75,17 @@ abstract class AppRouter {
           path: kForgetPasswordView,
           builder: (context, state) => const ForgetYourPasswordView(),
         ),
-        GoRoute(
-          path: kOtpCodeView,
-          builder: (context, state) {
-            final email = state.extra as String;
-            return OtpCodeView(
-              email: email,
-            );
-          },
-        ),
+  GoRoute(
+  path: kOtpCodeView,
+  builder: (context, state) {
+    final args = state.extra as OtpArguments;
+    return OtpCodeView(
+      email: args.email,
+      password: args.password,
+    );
+  },
+),
+
         GoRoute(
           path: kBersistentBottomNavBarView,
           builder: (context, state) => BersistentBottomNavBarView(),
@@ -138,6 +146,10 @@ abstract class AppRouter {
           path: kOfferHistoryView,
           builder: (context, state) => OfferHistoryView(),
         ),
+                GoRoute(
+          path: kTermsConditionView,
+          builder: (context, state) => TermsConditionView(),
+        ),
         GoRoute(
           path: kRemindersView,
           builder: (context, state) => RemindersView(),
@@ -162,7 +174,36 @@ abstract class AppRouter {
           path: kGamesView,
           builder: (context, state) => GamesView(),
         ),
+          GoRoute(
+          path: kPrivacyPolicyview,
+          builder: (context, state) => PrivacyPoliceView(),
+        ),
+       GoRoute(
+  path: AppRouter.kEditprofileview,
+  pageBuilder: (context, state) {
+    final data = state.extra as Map<String, dynamic>;
+    return MaterialPage(
+      child: EditProfileView(
+        profile: data["profile"],
+        special: data["special"],
+        cityName: data["cityName"],
+      ),
+    );
+  },
+),
+
       ],
     );
   }
+
+
+
+  
+}
+
+class OtpArguments {
+  final String email;
+  final String password;
+
+  OtpArguments({required this.email, required this.password});
 }

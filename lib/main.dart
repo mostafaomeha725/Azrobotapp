@@ -1,10 +1,10 @@
 import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/helper/BlocObserve/Simple_Bloc_Observe.dart';
+import 'package:azrobot/core/helper/notification/schedula_reminder_notification.dart';
 import 'package:azrobot/core/helper/shared_preferences/shared_preferences.dart';
 import 'package:azrobot/features/account/data/note_model.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/get_all_city_cubit/getallcity_cubit.dart';
-
 import 'package:azrobot/features/auth/presentation/manager/cubits/get_all_spe_cialties_cubits/cubit/getallspecialties_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/profile_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
@@ -19,23 +19,42 @@ import 'package:azrobot/features/home/presentation/manager/cubits/get_content_ca
 import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/post_view_specific_content/cubit/viewspecificcontent_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/purchase_vouchers/cubit/purchase_vouchers_cubit.dart';
-
-import 'package:device_preview/device_preview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzData;
+import 'package:timezone/timezone.dart' as tz;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    void setupTimezone() {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Africa/Cairo')); // أو حسب توقيت بلدك
+}
 void main() async {
-    await Hive.initFlutter(); 
-    Hive.registerAdapter(ReminderModelAdapter()); 
-    await Hive.openBox<ReminderModel>('reminders'); 
+     WidgetsFlutterBinding.ensureInitialized();
+       tzData.initializeTimeZones(); // مهم جدا
+        await initNotifications(); // مهم جداً
+
+if (await Permission.notification.isDenied) {
+    await Permission.notification.request();
+  }
+
+ // scheduleNotification();
+
+  // 📦 Hive و SharedPreferences
+  await Hive.initFlutter(); 
+  Hive.registerAdapter(ReminderModelAdapter()); 
+  await Hive.openBox<ReminderModel>('reminders'); 
 
   Bloc.observer = SimpleBlocObserve();
-      final prefs = await SharedPreferences.getInstance();
-     final password = prefs.getString('password');
-     final email = prefs.getString('email');
+  final prefs = await SharedPreferences.getInstance();
+  final password = prefs.getString('password');
+  final email = prefs.getString('email');
  
   runApp(
     MultiBlocProvider(
@@ -60,7 +79,7 @@ void main() async {
         BlocProvider<GetallspecialtiesCubit>(
           create: (context) =>
               GetallspecialtiesCubit(ApiService(), SharedPreference())
-                ..getAllSpecialties(), // Trigger initial fetch
+                ..getAllSpecialties(), 
         ),
         BlocProvider<GetContentByCategoryCubit>(
             create: (context) =>
@@ -128,9 +147,9 @@ class AzrobotApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.white),
       routerConfig: AppRouter.getRouter(AppRouter.kSplashView),
       debugShowCheckedModeBanner: false,
-      builder: DevicePreview.appBuilder,
-      locale: DevicePreview.locale(context),
+
     );
   }
 }
+
 

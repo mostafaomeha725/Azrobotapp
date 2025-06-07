@@ -8,7 +8,7 @@ import 'package:azrobot/features/home/presentation/views/videos_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart'; // Import the persistent_bottom_nav_bar package
-
+ 
 class BersistentBottomNavBarView extends StatefulWidget {
   const BersistentBottomNavBarView({super.key});
 

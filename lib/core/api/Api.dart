@@ -89,6 +89,44 @@ class Api {
     }
   }
 
+Future<Either<Failure, Map<String, dynamic>>> put({
+  required String name,
+  Map<String, dynamic>? body,
+  String? errMessage,
+  bool withAuth = false,
+}) async {
+  try {
+    Options? options;
+
+    if (withAuth) {
+      String? token = await SharedPreference().getToken();
+      if (token == null) return Left(ServerFailure('No token found'));
+      options = Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+        validateStatus: (status) => status != null && status < 500,
+      );
+    }
+
+    final response = await dio.put(
+      '${EndPoint.baseUrl}$name',
+      data: body,
+      options: options,
+    );
+
+    if (response.statusCode == 200) return Right(response.data);
+
+    final errorMessage =
+        response.data['message'] ?? errMessage ?? 'Request failed';
+    return Left(ServerFailure(errorMessage));
+  } on DioError catch (e) {
+    return Left(ServerFailure.fromDioError(e));
+  } catch (e) {
+    return Left(ServerFailure('An unexpected error occurred'));
+  }
+}
 
 
 

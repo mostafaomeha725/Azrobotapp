@@ -10,34 +10,35 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   SignUpCubit({required this.apiService}) : super(SignUpInitial());
 
-  Future<void> registerUser({
-    required String name,
-    required String email,
-    required String mobile,
-    required String password,
-    required String confirmPassword,
-    required int city,
-    required int specialty,
-  }) async {
-    emit(SignUpLoading());
+Future<void> registerUser({
+  required String name,
+  required String email,
+  required String mobile,
+  required String password,
+  required String confirmPassword,
+  required int city,
+  required int specialty,
+}) async {
+  emit(SignUpLoading());
 
-    try {
-      final result = await apiService.signUpUser(
-        name: name,
-        email: email,
-        mobile: mobile,
-        password: password,
-        confirmpassword: confirmPassword,
-        cityId: city.toString(), // Convert to string for API
-        specialtyId: specialty.toString(), // Convert to string for API
-      );
+  try {
+    final result = await apiService.signUpUser(
+      name: name,
+      email: email,
+      mobile: mobile,
+      password: password,
+      confirmpassword: confirmPassword,
+      cityId: city.toString(),        // API غالباً يحتاج String
+      specialtyId: specialty.toString(),
+    );
 
-      result?.fold(
-        (failure) => emit(SignUpFailure(errMessage: failure.errMessage)),
-        (_) => emit(SignUpSuccess()),
-      );
-    } catch (e) {
-      emit(SignUpFailure(errMessage: "An unexpected error occurred"));
-    }
+    result.fold(
+      (failure) => emit(SignUpFailure(errMessage: failure.errMessage)),
+      (_) => emit(SignUpSuccess(email: email, password: password)), // ✅ إرسال البيانات
+    );
+  } catch (e) {
+    emit(SignUpFailure(errMessage: "An unexpected error occurred"));
   }
+}
+
 }

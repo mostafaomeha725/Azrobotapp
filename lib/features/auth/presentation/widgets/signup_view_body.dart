@@ -32,7 +32,10 @@ class SignUpViewBody extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Sign Up successful!")),
               );
-              context.go(AppRouter.kOtpCodeView, extra: email);
+context.go(
+  AppRouter.kOtpCodeView,
+  extra: OtpArguments(email: email!, password: password!),
+);
             } else if (state is SignUpFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error: ${state.errMessage}')),
@@ -144,7 +147,6 @@ class SignUpViewBody extends StatelessWidget {
         }).toList(),
         onChanged: (value) {
           selectedCityId = value;
-          print('Selected City ID: $selectedCityId');
         },
         validator: (value) => value == null ? "Please select a city" : null,
       );
@@ -184,7 +186,6 @@ class SignUpViewBody extends StatelessWidget {
         }).toList(),
         onChanged: (value) {
           selectedSpecialityId = value;
-          print('Selected Specialty ID: $selectedSpecialityId');
         },
         validator: (value) => value == null ? "Please select a speciality" : null,
       );
@@ -205,8 +206,8 @@ class SignUpViewBody extends StatelessWidget {
                         },
                         validator: (value) {
                           if (value!.isEmpty) return "Password is required";
-                          if (value.length < 6) {
-                            return "Password must be at least 6 characters long";
+                          if (value.length < 8) {
+                            return "Password must be at least 8 characters long";
                           }
                           return null;
                         },

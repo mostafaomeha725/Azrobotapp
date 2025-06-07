@@ -2,7 +2,6 @@ import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_content_category/getcontentcategory_cubit.dart';
-import 'package:azrobot/features/home/presentation/views/medical_hub_details_view.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/appbar_text_widget.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/card_today_tips.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/hard_card_home.dart';
@@ -41,6 +40,7 @@ class HomeViewBodyState extends State<HomeViewBody> {
     }
 
     if (fetchedUserId != null) {
+      // ignore: use_build_context_synchronously
       context.read<ReminderCubit>().loadReminders(fetchedUserId);
     } else {
       debugPrint("userId not found");

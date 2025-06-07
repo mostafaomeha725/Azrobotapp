@@ -152,6 +152,7 @@ class _ActiveOfferHistoryState extends State<ActiveOfferHistory> {
                                         offer["voucher_description"] ?? "",
                                         style: TextStyles.bold12w400.copyWith(color: Colors.grey),
                                         textAlign: TextAlign.center,
+                                        maxLines: 3,
                                       ),
                                     ),
                                     const Spacer(),
