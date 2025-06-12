@@ -59,6 +59,8 @@ dependencies:
   timezone: ^0.9.2
   flutter_local_notifications: ^18.0.1
   permission_handler: ^12.0.0+1
+  device_info_plus: ^11.4.0
+  flutter_launcher_icons: ^0.14.3
 
   
 
@@ -101,8 +103,10 @@ flutter:
     - assets/image/
     - assets/animation/
     - assets/Graphics/
+    - assets/chime-alert-demo-309545.mp3
 
 flutter_icons:
   android: true
   ios: true
   image_path: "assets/azrobot_logo_only.png"
+  android_icon_name: "ic_launcher" # Custom name for Android icon

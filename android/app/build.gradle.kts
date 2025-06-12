@@ -13,7 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true // ✅ الصيغة الصحيحة في Kotlin DSL
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -30,7 +30,18 @@ android {
 
     buildTypes {
         getByName("release") {
+            // تأكد من استبدال "debug" بـ "release" إذا كنت تستخدم توقيع فعلي
             signingConfig = signingConfigs.getByName("debug")
+
+            // تفعيل تقليص الكود
+            isMinifyEnabled = false
+            isShrinkResources = false
+
+            // ملفات القواعد لـ ProGuard
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
@@ -40,5 +51,5 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // ✅ صيغة Kotlin DSL
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

@@ -7,75 +7,95 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> initNotifications() async {
-  // Initialize timezone data
-  tz.initializeTimeZones();
-  // Set the local timezone to Africa/Cairo
-  tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
-  print('🔔 المنطقة الزمنية المحلية: ${tz.local.name}');
+  try {
+    // Initialize timezone
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
+    print('🔔 Local timezone: ${tz.local.name}');
 
-  // Android notification channel
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'reminder_channel',
-    'الإشعارات',
-    description: 'إشعارات التذكير',
-    importance: Importance.max,
-    playSound: true,
-    enableVibration: true,
-  );
+    // Configure Android notification channel
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'reminder_channel',
+      'Reminders',
+      description: 'Reminder notifications',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+      showBadge: true,
+    );
 
-  // Create the notification channel
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+    // Create notification channel
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
 
-  // Android initialization settings
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+    // Android initialization settings
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
-  // Initialize the plugin
-  bool? initialized = await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) {
-      print('🔔 تم استلام إشعار: ${response.payload}');
-    },
-  );
-  print('🔔 تهيئة الإشعارات: ${initialized == true ? "نجحت" : "فشلت"}');
+    // Initialize plugin
+    bool? initialized = await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        print('🔔 Notification received: ${response.payload}');
+      },
+    );
+    print('🔔 Notification initialization: ${initialized == true ? "Successful" : "Failed"}');
 
-  // Request notification permissions for Android 13+
-  final androidPlugin = flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-  bool? permissionGranted = await androidPlugin?.requestNotificationsPermission();
-  print('🔔 إذن الإشعارات: ${permissionGranted == true ? "ممنوح" : "مرفوض"}');
+    // Request notification permission for Android 13+
+    final androidPlugin = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    bool? permissionGranted = await androidPlugin?.requestNotificationsPermission();
+    print('🔔 Notification permission: ${permissionGranted == true ? "Granted" : "Denied"}');
+  } catch (e) {
+    print('❌ Error initializing notifications: $e');
+  }
 }
+
 Future<void> scheduleReminderNotification({
   required int id,
   required String title,
   required String body,
   required String dateStringFromUI,
-  String repeat = 'Once', // إضافة معامل التكرار
+  String repeat = 'Once',
 }) async {
   try {
-    // ✅ إلغاء أي إشعار سابق بنفس المعرف
+    // Cancel any previous notification with the same ID
     await flutterLocalNotificationsPlugin.cancel(id);
-    
+    print('🔔 Cancelled previous notification with ID: $id');
+
+    // Parse the date string
     final dateFormat = DateFormat('MM/dd/yyyy hh:mm a');
     final parsedDate = dateFormat.parse(dateStringFromUI);
-    
-    // ✅ التأكد من أن التاريخ في المستقبل
+
+    // Ensure the date is in the future
     if (parsedDate.isBefore(DateTime.now())) {
-      print('❌ التاريخ المحدد في الماضي');
+      print('❌ Scheduled date is in the past: $dateStringFromUI');
       return;
     }
-    
-    final tzDateTime = tz.TZDateTime.from(parsedDate, tz.local);
-    
-    print('📅 جدولة الإشعار للوقت: $tzDateTime');
 
+    // Convert to timezone-aware date
+    final tzDateTime = tz.TZDateTime.from(parsedDate, tz.local);
+    print('📅 Scheduling notification for: $tzDateTime');
+
+    // Set repeat components
+    DateTimeComponents? matchDateTimeComponents;
+    if (repeat == 'Daily') {
+      matchDateTimeComponents = DateTimeComponents.time;
+      print('🔄 Setting repeat to Daily');
+    } else if (repeat == 'Monthly') {
+      matchDateTimeComponents = DateTimeComponents.dayOfMonthAndTime;
+      print('🔄 Setting repeat to Monthly');
+    } else {
+      print('🔄 Setting repeat to Once');
+    }
+
+    // Schedule the notification
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
@@ -88,21 +108,21 @@ Future<void> scheduleReminderNotification({
           channelDescription: 'Reminder notifications',
           importance: Importance.max,
           priority: Priority.high,
-          // ✅ إضافة خصائص مهمة للإشعارات
           ticker: 'reminder',
           enableVibration: true,
           playSound: true,
+          icon: '@mipmap/ic_launcher',
+          showWhen: true,
         ),
       ),
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      // ✅ إزالة matchDateTimeComponents للإشعارات غير المتكررة
-      matchDateTimeComponents: repeat == 'Daily' ? DateTimeComponents.time : null,
+      matchDateTimeComponents: matchDateTimeComponents,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
-    
-    print('✅ تم جدولة الإشعار بنجاح');
+
+    print('✅ Notification scheduled successfully with ID: $id');
   } catch (e) {
-    print('❌ خطأ في جدولة الإشعار: $e');
+    print('❌ Error scheduling notification: $e');
   }
 }

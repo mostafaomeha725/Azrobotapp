@@ -7,8 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
-class ReminderCardWidget extends StatelessWidget {
+class ReminderCardWidget extends StatefulWidget {
   final String title;
   final String repeat;
   final String dateTime;
@@ -26,31 +29,130 @@ class ReminderCardWidget extends StatelessWidget {
     this.ishome = true,
   });
 
-  void _showUpdateReminderDialog(BuildContext context) {
-    final _titleController = TextEditingController(text: title);
-    final _dateController = TextEditingController(text: dateTime);
-    String _selectedRepeat = repeat;
+  @override
+  State<ReminderCardWidget> createState() => _ReminderCardWidgetState();
+}
 
-    Future<void> _selectDateTime(BuildContext context) async {
+class _ReminderCardWidgetState extends State<ReminderCardWidget> {
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin = 
+      FlutterLocalNotificationsPlugin();
+  late BuildContext _dialogContext;
+
+  @override
+  void initState() {
+    super.initState();
+    initNotifications();
+    _scheduleNotification(
+      title: widget.title,
+      dateTime: widget.dateTime,
+      index: widget.index,
+      repeat: widget.repeat,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _dialogContext = context;
+  }
+
+  static Future<void> initNotifications() async {
+    try {
+      tz.initializeTimeZones();
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
+      const InitializationSettings initializationSettings = 
+          InitializationSettings(android: initializationSettingsAndroid);
+      await _notificationsPlugin.initialize(initializationSettings);
+      print('🔔 تهيئة الإشعارات في ReminderCardWidget: نجحت');
+    } catch (e) {
+      print('❌ خطأ في تهيئة الإشعارات: $e');
+    }
+  }
+
+  Future<void> _scheduleNotification({
+    required String title,
+    required String dateTime,
+    required int index,
+    required String repeat,
+  }) async {
+    try {
+      final DateFormat formatter = DateFormat('MM/dd/yyyy h:mm a');
+      final DateTime scheduledDate = formatter.parse(dateTime);
+
+      if (scheduledDate.isAfter(DateTime.now())) {
+        final tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(
+          scheduledDate,
+          tz.local,
+        );
+
+        DateTimeComponents? matchDateTimeComponents;
+        if (repeat == 'Daily') {
+          matchDateTimeComponents = DateTimeComponents.time;
+        } else if (repeat == 'Monthly') {
+          matchDateTimeComponents = DateTimeComponents.dayOfMonthAndTime;
+        }
+
+        const AndroidNotificationDetails androidDetails = 
+            AndroidNotificationDetails(
+          'reminder_channel',
+          'Reminders',
+          channelDescription: 'Channel for reminder notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+          enableVibration: true,
+          playSound: true,
+          icon: '@mipmap/ic_launcher',
+        );
+        const NotificationDetails notificationDetails = 
+            NotificationDetails(android: androidDetails);
+
+        await _notificationsPlugin.zonedSchedule(
+          index,
+          title,
+          'Your reminder for "$title" is due now!',
+          tzScheduledDate,
+          notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation: 
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: matchDateTimeComponents,
+        );
+        print('✅ تم جدولة الإشعار بمعرف: $index');
+      } else {
+        print('❌ التاريخ المحدد في الماضي: $dateTime');
+      }
+    } catch (e) {
+      print('❌ خطأ في جدولة الإشعار: $e');
+    }
+  }
+
+  void _showUpdateReminderDialog() {
+    final _titleController = TextEditingController(text: widget.title);
+    final _dateController = TextEditingController(text: widget.dateTime);
+    String _selectedRepeat = widget.repeat;
+
+    Future<void> _selectDateTime() async {
       DateTime? selectedDate = await showDatePicker(
-        context: context,
+        context: _dialogContext,
         initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
+        firstDate: DateTime.now(),
         lastDate: DateTime(2101),
       );
 
       if (selectedDate != null) {
         TimeOfDay? selectedTime = await showTimePicker(
-          context: context,
+          context: _dialogContext,
           initialTime: TimeOfDay.now(),
         );
 
         if (selectedTime != null) {
-          int hour =
+          int hour = 
               selectedTime.hourOfPeriod == 0 ? 12 : selectedTime.hourOfPeriod;
           String amPm = selectedTime.period == DayPeriod.am ? 'AM' : 'PM';
           String formattedDate = DateFormat('MM/dd/yyyy').format(selectedDate);
-          String formattedDateTime =
+          String formattedDateTime = 
               "$formattedDate $hour:${selectedTime.minute.toString().padLeft(2, '0')} $amPm";
           _dateController.text = formattedDateTime;
         }
@@ -58,7 +160,7 @@ class ReminderCardWidget extends StatelessWidget {
     }
 
     showDialog(
-      context: context,
+      context: _dialogContext,
       builder: (_) {
         return Dialog(
           backgroundColor: Colors.white,
@@ -101,7 +203,7 @@ class ReminderCardWidget extends StatelessWidget {
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.calendar_today),
-                        onPressed: () => _selectDateTime(context),
+                        onPressed: _selectDateTime,
                       ),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -144,13 +246,15 @@ class ReminderCardWidget extends StatelessWidget {
                           final prefs = await SharedPreferences.getInstance();
                           final userId = prefs.getString("userId");
                           if (userId != null) {
-                            context.read<ReminderCubit>().deleteReminder(
+                            _dialogContext.read<ReminderCubit>().deleteReminder(
                                   userId: userId,
-                                  index: index,
+                                  index: widget.index,
                                 );
-                            GoRouter.of(context).pop();
+                            await _notificationsPlugin.cancel(widget.index);
+                            print('🔔 تم إلغاء الإشعار بمعرف: ${widget.index}');
+                            GoRouter.of(_dialogContext).pop();
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            ScaffoldMessenger.of(_dialogContext).showSnackBar(
                               SnackBar(content: Text("User ID not found. Please login again.")),
                             );
                           }
@@ -183,15 +287,23 @@ class ReminderCardWidget extends StatelessWidget {
                                 repeat: repeatValue,
                               );
 
-                              context.read<ReminderCubit>().updateReminder(
+                              _dialogContext.read<ReminderCubit>().updateReminder(
                                     userId: userId,
                                     updatedReminder: updatedReminder,
-                                    index: index,
+                                    index: widget.index,
                                   );
 
-                              GoRouter.of(context).pop();
+                              await _scheduleNotification(
+                                title: message,
+                                dateTime: date,
+                                index: widget.index,
+                                repeat: repeatValue,
+                              );
+
+                              print('✅ تم تحديث الإشعار بمعرف: ${widget.index}');
+                              GoRouter.of(_dialogContext).pop();
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(_dialogContext).showSnackBar(
                                 SnackBar(content: Text("User ID not found. Please login again.")),
                               );
                             }
@@ -216,7 +328,7 @@ class ReminderCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showUpdateReminderDialog(context),
+      onTap: _showUpdateReminderDialog,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -229,14 +341,14 @@ class ReminderCardWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
-                Text("$repeat - $dateTime", style: const TextStyle(color: Colors.white70)),
+                Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                Text("${widget.repeat} - ${widget.dateTime}", style: const TextStyle(color: Colors.white70)),
               ],
             ),
-            ishome
+            widget.ishome
                 ? IconButton(
                     icon: const Icon(Icons.edit, color: Colors.white),
-                    onPressed: () => _showUpdateReminderDialog(context),
+                    onPressed: _showUpdateReminderDialog,
                   )
                 : SizedBox(),
           ],

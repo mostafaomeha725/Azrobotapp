@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/helper/BlocObserve/Simple_Bloc_Observe.dart';
-import 'package:azrobot/core/helper/notification/schedula_reminder_notification.dart';
+import 'package:azrobot/core/helper/notification/schedula_reminder_notification.dart' as NotificationService;
 import 'package:azrobot/core/helper/shared_preferences/shared_preferences.dart';
 import 'package:azrobot/features/account/data/note_model.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/get_all_city_cubit/getallcity_cubit.dart';
@@ -19,43 +20,74 @@ import 'package:azrobot/features/home/presentation/manager/cubits/get_content_ca
 import 'package:azrobot/features/home/presentation/manager/cubits/get_user_point/cubit/getuserpoint_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/post_view_specific_content/cubit/viewspecificcontent_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/purchase_vouchers/cubit/purchase_vouchers_cubit.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzData;
 import 'package:timezone/timezone.dart' as tz;
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
-    void setupTimezone() {
-  tz.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation('Africa/Cairo')); // أو حسب توقيت بلدك
+
+void setupTimezone() {
+  tzData.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
 }
-void main() async {
-     WidgetsFlutterBinding.ensureInitialized();
-       tzData.initializeTimeZones(); // مهم جدا
-        await initNotifications(); // مهم جداً
 
-if (await Permission.notification.isDenied) {
-    await Permission.notification.request();
+// طلب أذونات الإشعارات والإنذارات الدقيقة
+Future<void> requestPermissions() async {
+  if (Platform.isAndroid) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    
+    // طلب إذن الإشعارات لأندرويد 13 وما فوق
+    if (androidInfo.version.sdkInt >= 33) {
+      var status = await Permission.notification.status;
+      if (!status.isGranted) {
+        status = await Permission.notification.request();
+        print('🔔 حالة إذن الإشعارات: $status');
+      }
+    }
+
+    // طلب إذن SCHEDULE_EXACT_ALARM لأندرويد 12 وما فوق
+    if (androidInfo.version.sdkInt >= 31) {
+      var status = await Permission.scheduleExactAlarm.status;
+      if (!status.isGranted) {
+        status = await Permission.scheduleExactAlarm.request();
+        print('🔔 حالة إذن الإنذارات الدقيقة: $status');
+      }
+    }
   }
+}
 
- // scheduleNotification();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // 📦 Hive و SharedPreferences
-  await Hive.initFlutter(); 
-  Hive.registerAdapter(ReminderModelAdapter()); 
-  await Hive.openBox<ReminderModel>('reminders'); 
+  // تهيئة المنطقة الزمنية
+  setupTimezone();
 
-  Bloc.observer = SimpleBlocObserve();
+  // تهيئة الإشعارات
+  await NotificationService.initNotifications();
+
+  // طلب الأذونات
+  await requestPermissions();
+
+  // تهيئة Hive
+  await Hive.initFlutter();
+  Hive.registerAdapter(ReminderModelAdapter());
+  await Hive.openBox<ReminderModel>('reminders');
+
+  // جلب SharedPreferences
   final prefs = await SharedPreferences.getInstance();
   final password = prefs.getString('password');
   final email = prefs.getString('email');
- 
+
+  Bloc.observer = SimpleBlocObserve();
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -68,7 +100,6 @@ if (await Permission.notification.isDenied) {
         BlocProvider<ResetOtpCubit>(
           create: (context) => ResetOtpCubit(ApiService()),
         ),
-        // Add more providers here if needed
         BlocProvider<ProfileCubit>(
           create: (context) => ProfileCubit(ApiService(), SharedPreference())..getProfile(),
         ),
@@ -78,65 +109,46 @@ if (await Permission.notification.isDenied) {
         ),
         BlocProvider<GetallspecialtiesCubit>(
           create: (context) =>
-              GetallspecialtiesCubit(ApiService(), SharedPreference())
-                ..getAllSpecialties(), 
+              GetallspecialtiesCubit(ApiService(), SharedPreference())..getAllSpecialties(),
         ),
         BlocProvider<GetContentByCategoryCubit>(
-            create: (context) =>
-                GetContentByCategoryCubit(ApiService(), SharedPreference())),
+          create: (context) =>
+              GetContentByCategoryCubit(ApiService(), SharedPreference()),
+        ),
         BlocProvider<GetAllContentsCubit>(
           create: (context) =>
-              GetAllContentsCubit(ApiService(), SharedPreference())
-                ..getAllContents(),
+              GetAllContentsCubit(ApiService(), SharedPreference())..getAllContents(),
         ),
-         BlocProvider<GetVoucherCubit>(
-          create: (context) =>
-              GetVoucherCubit(ApiService())
-               
+        BlocProvider<GetVoucherCubit>(
+          create: (context) => GetVoucherCubit(ApiService()),
         ),
-          BlocProvider<PurchaseVouchersCubit>(
-          create: (context) =>
-              PurchaseVouchersCubit()
-               
+        BlocProvider<PurchaseVouchersCubit>(
+          create: (context) => PurchaseVouchersCubit(),
         ),
-         BlocProvider<ViewspecificcontentCubit>(
-          create: (context) =>
-              ViewspecificcontentCubit()
-               
+        BlocProvider<ViewspecificcontentCubit>(
+          create: (context) => ViewspecificcontentCubit(),
         ),
-         BlocProvider<ReminderCubit>(
-          create: (context) =>
-              ReminderCubit()
-               
+        BlocProvider<ReminderCubit>(
+          create: (context) => ReminderCubit(),
         ),
- BlocProvider<GetGamesCubit>(
-          create: (context) =>
-              GetGamesCubit(dio: Dio())
-               
+        BlocProvider<GetGamesCubit>(
+          create: (context) => GetGamesCubit(dio: Dio()),
         ),
-
-           BlocProvider<SignInCubit>(
-          create: (context) =>
-              SignInCubit(
-                ApiService(),
-                ProfileCubit(ApiService(), SharedPreference(),
-                
-                ),
-                SharedPreference()
-              )..signInUser(email:email! , password:password! ),
-               
+        BlocProvider<SignInCubit>(
+          create: (context) => SignInCubit(
+            ApiService(),
+            ProfileCubit(ApiService(), SharedPreference()),
+            SharedPreference(),
+          )..signInUser(email: email ?? '', password: password ?? ''),
         ),
-         BlocProvider<GetUserPointCubit>(
-          create: (context) =>
-              GetUserPointCubit(ApiService())
-               
+        BlocProvider<GetUserPointCubit>(
+          create: (context) => GetUserPointCubit(ApiService()),
         ),
       ],
-      child: AzrobotApp(), 
+      child: const AzrobotApp(),
     ),
   );
 }
-
 
 class AzrobotApp extends StatelessWidget {
   const AzrobotApp({super.key});
@@ -147,9 +159,6 @@ class AzrobotApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.white),
       routerConfig: AppRouter.getRouter(AppRouter.kSplashView),
       debugShowCheckedModeBanner: false,
-
     );
   }
 }
-
-

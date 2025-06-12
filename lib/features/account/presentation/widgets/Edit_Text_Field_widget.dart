@@ -70,14 +70,18 @@ class _EditTextFieldWidgetState extends State<EditTextFieldWidget> {
               children: [
                 Expanded(
                   child: isEditing
-                      ? TextField(
-                          controller: controller,
-                          onChanged: widget.onChanged,
-                          autofocus: true,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
+                      ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 8),
+                        child: TextField(
+                          
+                            controller: controller,
+                            onChanged: widget.onChanged,
+                            autofocus: true,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                            ),
                           ),
-                        )
+                      )
                       : Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),
                           child: Text(
