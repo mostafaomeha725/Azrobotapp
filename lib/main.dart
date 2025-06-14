@@ -39,26 +39,31 @@ void setupTimezone() {
   tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
 }
 
-// طلب أذونات الإشعارات والإنذارات الدقيقة
 Future<void> requestPermissions() async {
   if (Platform.isAndroid) {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     
-    // طلب إذن الإشعارات لأندرويد 13 وما فوق
+    // طلب إذن الإشعارات
     if (androidInfo.version.sdkInt >= 33) {
       var status = await Permission.notification.status;
       if (!status.isGranted) {
         status = await Permission.notification.request();
         print('🔔 حالة إذن الإشعارات: $status');
+        if (!status.isGranted) {
+          print('⚠️ إذن الإشعارات مرفوض، قد لا تظهر الإشعارات');
+        }
       }
     }
 
-    // طلب إذن SCHEDULE_EXACT_ALARM لأندرويد 12 وما فوق
+    // طلب إذن SCHEDULE_EXACT_ALARM
     if (androidInfo.version.sdkInt >= 31) {
       var status = await Permission.scheduleExactAlarm.status;
       if (!status.isGranted) {
         status = await Permission.scheduleExactAlarm.request();
         print('🔔 حالة إذن الإنذارات الدقيقة: $status');
+        if (!status.isGranted) {
+          print('⚠️ إذن الإنذارات الدقيقة مرفوض، الإشعارات قد تتأخر');
+        }
       }
     }
   }
@@ -75,6 +80,10 @@ void main() async {
 
   // طلب الأذونات
   await requestPermissions();
+
+  // إلغاء كل الإشعارات القديمة لتجنب التعارض
+  await flutterLocalNotificationsPlugin.cancelAll();
+  print('🔔 تم إلغاء كل الإشعارات القديمة');
 
   // تهيئة Hive
   await Hive.initFlutter();

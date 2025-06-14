@@ -1,3 +1,4 @@
+import 'package:azrobot/core/helper/notification/schedula_reminder_notification.dart';
 import 'package:azrobot/features/account/data/note_model.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
 import 'package:azrobot/features/auth/presentation/widgets/hint_text_auth.dart';
@@ -8,8 +9,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class ReminderCardWidget extends StatefulWidget {
   final String title;
@@ -34,18 +33,16 @@ class ReminderCardWidget extends StatefulWidget {
 }
 
 class _ReminderCardWidgetState extends State<ReminderCardWidget> {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin = 
-      FlutterLocalNotificationsPlugin();
   late BuildContext _dialogContext;
 
   @override
   void initState() {
     super.initState();
-    initNotifications();
-    _scheduleNotification(
+    scheduleReminderNotification(
+      id: widget.index,
       title: widget.title,
-      dateTime: widget.dateTime,
-      index: widget.index,
+      body: 'Your reminder for "${widget.title}" is due now!',
+      dateStringFromUI: widget.dateTime,
       repeat: widget.repeat,
     );
   }
@@ -54,78 +51,6 @@ class _ReminderCardWidgetState extends State<ReminderCardWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _dialogContext = context;
-  }
-
-  static Future<void> initNotifications() async {
-    try {
-      tz.initializeTimeZones();
-      const AndroidInitializationSettings initializationSettingsAndroid =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
-      const InitializationSettings initializationSettings = 
-          InitializationSettings(android: initializationSettingsAndroid);
-      await _notificationsPlugin.initialize(initializationSettings);
-      print('🔔 تهيئة الإشعارات في ReminderCardWidget: نجحت');
-    } catch (e) {
-      print('❌ خطأ في تهيئة الإشعارات: $e');
-    }
-  }
-
-  Future<void> _scheduleNotification({
-    required String title,
-    required String dateTime,
-    required int index,
-    required String repeat,
-  }) async {
-    try {
-      final DateFormat formatter = DateFormat('MM/dd/yyyy h:mm a');
-      final DateTime scheduledDate = formatter.parse(dateTime);
-
-      if (scheduledDate.isAfter(DateTime.now())) {
-        final tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(
-          scheduledDate,
-          tz.local,
-        );
-
-        DateTimeComponents? matchDateTimeComponents;
-        if (repeat == 'Daily') {
-          matchDateTimeComponents = DateTimeComponents.time;
-        } else if (repeat == 'Monthly') {
-          matchDateTimeComponents = DateTimeComponents.dayOfMonthAndTime;
-        }
-
-        const AndroidNotificationDetails androidDetails = 
-            AndroidNotificationDetails(
-          'reminder_channel',
-          'Reminders',
-          channelDescription: 'Channel for reminder notifications',
-          importance: Importance.max,
-          priority: Priority.high,
-          showWhen: true,
-          enableVibration: true,
-          playSound: true,
-          icon: '@mipmap/ic_launcher',
-        );
-        const NotificationDetails notificationDetails = 
-            NotificationDetails(android: androidDetails);
-
-        await _notificationsPlugin.zonedSchedule(
-          index,
-          title,
-          'Your reminder for "$title" is due now!',
-          tzScheduledDate,
-          notificationDetails,
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation: 
-              UILocalNotificationDateInterpretation.absoluteTime,
-          matchDateTimeComponents: matchDateTimeComponents,
-        );
-        print('✅ تم جدولة الإشعار بمعرف: $index');
-      } else {
-        print('❌ التاريخ المحدد في الماضي: $dateTime');
-      }
-    } catch (e) {
-      print('❌ خطأ في جدولة الإشعار: $e');
-    }
   }
 
   void _showUpdateReminderDialog() {
@@ -148,11 +73,10 @@ class _ReminderCardWidgetState extends State<ReminderCardWidget> {
         );
 
         if (selectedTime != null) {
-          int hour = 
-              selectedTime.hourOfPeriod == 0 ? 12 : selectedTime.hourOfPeriod;
+          int hour = selectedTime.hourOfPeriod == 0 ? 12 : selectedTime.hourOfPeriod;
           String amPm = selectedTime.period == DayPeriod.am ? 'AM' : 'PM';
           String formattedDate = DateFormat('MM/dd/yyyy').format(selectedDate);
-          String formattedDateTime = 
+          String formattedDateTime =
               "$formattedDate $hour:${selectedTime.minute.toString().padLeft(2, '0')} $amPm";
           _dateController.text = formattedDateTime;
         }
@@ -250,7 +174,7 @@ class _ReminderCardWidgetState extends State<ReminderCardWidget> {
                                   userId: userId,
                                   index: widget.index,
                                 );
-                            await _notificationsPlugin.cancel(widget.index);
+                            await flutterLocalNotificationsPlugin.cancel(widget.index);
                             print('🔔 تم إلغاء الإشعار بمعرف: ${widget.index}');
                             GoRouter.of(_dialogContext).pop();
                           } else {
@@ -293,10 +217,11 @@ class _ReminderCardWidgetState extends State<ReminderCardWidget> {
                                     index: widget.index,
                                   );
 
-                              await _scheduleNotification(
+                              await scheduleReminderNotification(
+                                id: widget.index,
                                 title: message,
-                                dateTime: date,
-                                index: widget.index,
+                                body: 'Your reminder for "$message" is due now!',
+                                dateStringFromUI: date,
                                 repeat: repeatValue,
                               );
 
